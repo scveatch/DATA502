@@ -7,13 +7,20 @@
 #    http://shiny.rstudio.com/
 #
 
+if(!require(ggplot2)) install.packages("ggplot2")
+if(!require(shinyWidgets)) install.packages("shinyWidgets")
+
 library(shiny)
+#library(ggplot2)
+#library(maps)
+#library(RColorBrewer)
+#library(shinyWidgets)
 
 # Define UI for application that draws a histogram
 fluidPage(
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel("Hello World"),
 
     # Sidebar with a slider input for number of bins
     sidebarLayout(
