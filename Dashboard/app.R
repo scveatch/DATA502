@@ -8,9 +8,12 @@
 #
 
 library(shiny)
+library(tidyverse)
+library(plotly)
+library(ggplot2)
 
 # Import Data
-
+data3 <- read.csv("YOUR PATH HERE")
 
 # Set Color
 
@@ -19,40 +22,48 @@ library(shiny)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-        )
+  titlePanel("PM 2.5 Mapper"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("year", 
+                  h3("Select a Year"), 
+                  min = 2016, 
+                  max = 2019, 
+                  value = 2016),
+      
+      selectInput("week",
+                  h3("Select a week:"),
+                  choices = c(unique(data3$week)),
+                  selected = 1)
+    ),
+    
+    mainPanel(
+      plotOutput("choropleth")
     )
+  )
+
+  
 )
+ 
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
-    })
+  
+  # Main Choropleth
+  output$choropleth <- renderPlot({
+    # Define Inputs
+    iyear <- input$year
+    iweek <- input$week
+    # Make Plot
+    ggplot(data3 %>% filter(year == iyear & week == iweek), 
+           aes(long, lat, group = group, fill = PM25_pop_pred)) + 
+      geom_polygon() + 
+      scale_fill_gradient(low = "blue", high = "red", na.value = "grey") + 
+      coord_quickmap() + 
+      theme_void()
+    # Produce Plot
+  })
 }
 
 # Run the application 
