@@ -13,7 +13,14 @@ library(plotly)
 library(ggplot2)
 
 # Import Data
-data3 <- read.csv("YOUR PATH HERE")
+#data3 <- read.csv("../Project Data/joinedData2.csv")
+#power_plants <- read_csv('../Project Data/PowerPlants.csv')
+#coal_plants <- power_plants%>%
+#  filter(PrimSource == 'coal')%>%
+#  filter(!State %in% c('Alaska', 'Hawaii', 'Puerto Rico'))
+
+data3 <- readRDS('../Project Data/data3.rds')
+coal_plants <- readRDS('../Project Data/coal_plants.rds')
 
 # Set Color
 
@@ -57,9 +64,10 @@ server <- function(input, output) {
     iweek <- input$week
     # Make Plot
     ggplot(data3 %>% filter(year == iyear & week == iweek), 
-           aes(long, lat, group = group, fill = PM25_pop_pred)) + 
-      geom_polygon() + 
-      scale_fill_gradient(low = "blue", high = "red", na.value = "grey") + 
+           aes(long, lat)) + 
+      geom_polygon(aes(group = group, fill = PM25_pop_pred)) + 
+      scale_fill_gradient(low = "blue", high = "red", na.value = "grey") +
+      geom_point(data=coal_plants, aes(Longitude, Latitude)) +
       coord_quickmap() + 
       theme_void()
     # Produce Plot
